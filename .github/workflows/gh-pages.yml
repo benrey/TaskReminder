@@ -36,8 +36,6 @@ jobs:
 
     - name: Build
       run: npm run build:ci
-    - name: Test
-      run: npm run test:ci
 
     - name: Archive build
       if: success()
@@ -59,5 +57,4 @@ jobs:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         branch: gh-pages
         publish_dir: ./docs
-        run: ng serve
         enable_jekyll: true
