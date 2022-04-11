@@ -16,18 +16,48 @@ jobs:
       uses: actions/setup-node@v2
       with:
         node-version: '16'
+    - name: Cache node modules
+      id: cache-nodemodules
+      uses: actions/cache@v2
+      env:
+        cache-name: cache-node-modules
+      with:
+        # caching node_modules
+        path: node_modules # 👈 path for node_modules folder
+        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+        # 👆 name of the chache key includes package-lock.json
+        restore-keys: |
+          ${{ runner.os }}-build-${{ env.cache-name }}-
+          ${{ runner.os }}-build-
+          ${{ runner.os }}-
 
     - name: Install dependencies
       run: npm install
 
     - name: Build
-      run: npm run build
+      run: npm run build:ci
+    - name: Test
+      run: npm run test:ci
+
+    - name: Archive build
+      if: success()
+      uses: actions/upload-artifact@v1
+      with:
+        name: deploy_dist
+        path: dist
+    - name: Archive code coverage result
+      if: success()
+      uses: actions/upload-artifact@v1
+      with:
+        name: deploy_coverage
+        path: coverage
    
-    - name: Deploy
+    - name: Deploy to GitHub Pages
       if: success()
       uses: peaceiris/actions-gh-pages@v3
       with: 
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./docs
+        branch: gh-pages
+        publish_dir: ./
         run: ng serve
         enable_jekyll: true
