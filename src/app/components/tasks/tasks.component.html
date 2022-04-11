@@ -1,0 +1,11 @@
+<app-add-task (onAddTask)="addTask($event)">
+  
+</app-add-task>
+<app-task-item 
+  *ngFor="let task of tasks | slice:0:tasks.length"
+  [task]="task"
+  (onDeleteTask)="deleteTask(task)"
+  (onToggleReminder)="toggleReminder(task)"
+  ></app-task-item>
+
+  <!--| slice:1:tasks.length-->
